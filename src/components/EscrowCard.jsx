@@ -53,7 +53,7 @@ export default function EscrowCard({ e, user, onDeliver, onConfirm }) {
   const handleDeposit = async () => {
     try {
       if (!window.ethereum) {
-        toast.error("To create an escrow you need a crypto wallet. Install MetaMask or open this site inside a wallet browser.”);
+        toast.error("To create an escrow you need a crypto wallet. Install MetaMask or open this site inside a wallet browser.");
         return;
       }
 
