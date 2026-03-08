@@ -9,18 +9,45 @@ import EscrowABI from "../contracts/EscrowABI.json";
 import { FACTORY_ADDRESS } from "../contracts/config";
 import { fundEscrow } from "../api/escrowApi";
 
-/* Status → top border color */
-const statusColor = {
-  CREATED: "#f59e0b",
-  FUNDED: "#6366f1",
-  SHIPPED: "#a855f7",
-  DELIVERED: "#10b981",
-  RELEASED: "#10b981",
+/* Status → top border color and gradient */
+const statusConfig = {
+  CREATED: {
+    color: "#f59e0b",
+    gradient:
+      "linear-gradient(135deg, rgba(245,158,11,0.2), rgba(245,158,11,0.05))",
+    border: "rgba(245,158,11,0.3)",
+  },
+  FUNDED: {
+    color: "#6366f1",
+    gradient:
+      "linear-gradient(135deg, rgba(99,102,241,0.2), rgba(99,102,241,0.05))",
+    border: "rgba(99,102,241,0.3)",
+  },
+  SHIPPED: {
+    color: "#a855f7",
+    gradient:
+      "linear-gradient(135deg, rgba(168,85,247,0.2), rgba(168,85,247,0.05))",
+    border: "rgba(168,85,247,0.3)",
+  },
+  DELIVERED: {
+    color: "#10b981",
+    gradient:
+      "linear-gradient(135deg, rgba(16,185,129,0.2), rgba(16,185,129,0.05))",
+    border: "rgba(16,185,129,0.3)",
+  },
+  RELEASED: {
+    color: "#10b981",
+    gradient:
+      "linear-gradient(135deg, rgba(16,185,129,0.2), rgba(16,185,129,0.05))",
+    border: "rgba(16,185,129,0.3)",
+  },
 };
 
 export default function EscrowCard({ e, user, onDeliver, onConfirm }) {
   const role = user?.role?.replace("ROLE_", "");
   const [loading, setLoading] = useState(false);
+
+  const config = statusConfig[e.escrowStatus] || statusConfig.CREATED;
 
   // ================= DEPOSIT =================
   const handleDeposit = async () => {
@@ -97,8 +124,6 @@ export default function EscrowCard({ e, user, onDeliver, onConfirm }) {
     }
   };
 
-  const borderColor = statusColor[e.escrowStatus] || "#334155";
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -106,45 +131,43 @@ export default function EscrowCard({ e, user, onDeliver, onConfirm }) {
       transition={{ duration: 0.35 }}
       whileHover={{ y: -3 }}
       style={{
-        background:
-          "linear-gradient(135deg, rgba(255,255,255,0.055) 0%, rgba(255,255,255,0.02) 100%)",
-        border: "1px solid rgba(255,255,255,0.08)",
-        borderRadius: "16px",
+        background: config.gradient,
+        border: `1px solid ${config.border}`,
+        borderRadius: "18px",
         overflow: "hidden",
         display: "flex",
         flexDirection: "column",
-        transition: "box-shadow 0.25s ease, border-color 0.25s ease",
+        transition: "all 0.3s ease",
         position: "relative",
-        boxShadow:
-          "0 1px 3px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.04)",
+        boxShadow: `0 10px 30px rgba(0,0,0,0.4), 0 0 0 1px ${config.border}`,
+        backdropFilter: "blur(10px)",
+        WebkitBackdropFilter: "blur(10px)",
       }}
       onHoverStart={(e) => {
-        e.currentTarget.style.boxShadow =
-          "0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(99,102,241,0.3), 0 0 24px rgba(99,102,241,0.1)";
-        e.currentTarget.style.borderColor = "rgba(99,102,241,0.25)";
+        e.currentTarget.style.transform = "translateY(-4px)";
+        e.currentTarget.style.boxShadow = `0 20px 40px rgba(0,0,0,0.5), 0 0 0 1px ${config.color}40, 0 0 30px ${config.color}20`;
       }}
       onHoverEnd={(e) => {
-        e.currentTarget.style.boxShadow =
-          "0 1px 3px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.04)";
-        e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)";
+        e.currentTarget.style.transform = "translateY(0)";
+        e.currentTarget.style.boxShadow = `0 10px 30px rgba(0,0,0,0.4), 0 0 0 1px ${config.border}`;
       }}
     >
-      {/* Colored top status bar */}
+      {/* Decorative top accent */}
       <div
         style={{
-          height: "3px",
-          background: borderColor,
-          boxShadow: `0 0 12px ${borderColor}60`,
+          height: "4px",
+          background: `linear-gradient(90deg, ${config.color}00, ${config.color}60, ${config.color}00)`,
+          boxShadow: `0 0 15px ${config.color}40`,
         }}
       />
 
       {/* Content */}
       <div
         style={{
-          padding: "18px 20px",
+          padding: "20px",
           display: "flex",
           flexDirection: "column",
-          gap: "0",
+          gap: "12px",
           flex: 1,
         }}
       >
@@ -154,39 +177,41 @@ export default function EscrowCard({ e, user, onDeliver, onConfirm }) {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "flex-start",
-            gap: "10px",
-            marginBottom: "4px",
+            gap: "12px",
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
             <div
               style={{
-                width: "34px",
-                height: "34px",
-                borderRadius: "9px",
-                background: `${borderColor}20`,
-                border: `1px solid ${borderColor}40`,
+                width: "40px",
+                height: "40px",
+                borderRadius: "12px",
+                background: `${config.color}20`,
+                border: `1px solid ${config.color}30`,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 flexShrink: 0,
+                boxShadow: `0 8px 20px ${config.color}20`,
               }}
             >
-              <Package size={16} style={{ color: borderColor }} />
+              <Package size={18} style={{ color: config.color }} />
             </div>
             <div>
               <h3
                 style={{
-                  fontSize: "14px",
-                  fontWeight: "600",
+                  fontSize: "16px",
+                  fontWeight: "700",
                   color: "#f1f5f9",
                   letterSpacing: "-0.01em",
-                  marginBottom: "1px",
+                  marginBottom: "2px",
                 }}
               >
                 {e.productName}
               </h3>
-              <p style={{ fontSize: "11px", color: "#475569" }}>ID #{e.id}</p>
+              <p style={{ fontSize: "12px", color: "#94a3b8" }}>
+                Transaction ID: {e.id}
+              </p>
             </div>
           </div>
 
@@ -194,7 +219,7 @@ export default function EscrowCard({ e, user, onDeliver, onConfirm }) {
             style={{
               display: "flex",
               flexDirection: "column",
-              gap: "4px",
+              gap: "6px",
               alignItems: "flex-end",
             }}
           >
@@ -210,20 +235,19 @@ export default function EscrowCard({ e, user, onDeliver, onConfirm }) {
           style={{
             display: "flex",
             alignItems: "center",
-            gap: "8px",
-            padding: "10px 12px",
-            background: "rgba(99,102,241,0.07)",
-            border: "1px solid rgba(99,102,241,0.15)",
-            borderRadius: "10px",
-            marginTop: "14px",
-            marginBottom: "4px",
+            gap: "10px",
+            padding: "12px 14px",
+            background: "rgba(255,255,255,0.05)",
+            border: "1px solid rgba(255,255,255,0.1)",
+            borderRadius: "12px",
+            backdropFilter: "blur(8px)",
           }}
         >
-          <Wallet size={13} style={{ color: "#818cf8", flexShrink: 0 }} />
+          <Wallet size={16} style={{ color: config.color }} />
           <span
             style={{
-              fontSize: "11px",
-              color: "#64748b",
+              fontSize: "12px",
+              color: "#94a3b8",
               fontWeight: "600",
               letterSpacing: "0.04em",
               textTransform: "uppercase",
@@ -234,9 +258,9 @@ export default function EscrowCard({ e, user, onDeliver, onConfirm }) {
           <span
             style={{
               marginLeft: "auto",
-              fontSize: "15px",
-              fontWeight: "700",
-              color: "#a5b4fc",
+              fontSize: "18px",
+              fontWeight: "800",
+              color: config.color,
               letterSpacing: "-0.02em",
             }}
           >
@@ -254,48 +278,90 @@ export default function EscrowCard({ e, user, onDeliver, onConfirm }) {
         <div
           style={{
             display: "flex",
-            gap: "8px",
-            marginTop: "16px",
+            gap: "10px",
+            marginTop: "8px",
             flexWrap: "wrap",
           }}
         >
           {role === "BUYER" && e.escrowStatus === "CREATED" && (
-            <button
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               className="btn-primary"
-              style={{ flex: 1, fontSize: "13px", padding: "9px 16px" }}
+              style={{
+                flex: 1,
+                fontSize: "14px",
+                padding: "10px 18px",
+                borderRadius: "12px",
+                background: `linear-gradient(135deg, ${config.color}, ${config.color}cc)`,
+                border: `1px solid ${config.color}40`,
+                color: "#fff",
+                fontWeight: "700",
+                letterSpacing: "0.02em",
+                boxShadow: `0 8px 20px ${config.color}30`,
+                transition: "all 0.3s ease",
+              }}
               onClick={handleDeposit}
               disabled={loading}
             >
-              <Wallet size={13} />
-              {loading ? "Processing…" : "Pay Now"}
-            </button>
+              <Wallet size={16} style={{ marginRight: "8px" }} />
+              {loading ? "Processing…" : "Fund Escrow"}
+            </motion.button>
           )}
 
           {role === "SELLER" &&
             e.shipmentStatus === "PENDING" &&
             e.escrowStatus === "FUNDED" && (
-              <button
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 className="btn-warning"
-                style={{ flex: 1, fontSize: "13px", padding: "9px 16px" }}
+                style={{
+                  flex: 1,
+                  fontSize: "14px",
+                  padding: "10px 18px",
+                  borderRadius: "12px",
+                  background: "linear-gradient(135deg, #f59e0b, #f59e0b80)",
+                  border: "1px solid #f59e0b40",
+                  color: "#fff",
+                  fontWeight: "700",
+                  letterSpacing: "0.02em",
+                  boxShadow: "0 8px 20px rgba(245,158,11,0.3)",
+                  transition: "all 0.3s ease",
+                }}
                 onClick={() => onDeliver?.(e.id)}
               >
-                <Truck size={13} />
+                <Truck size={16} style={{ marginRight: "8px" }} />
                 Ship Product
-              </button>
+              </motion.button>
             )}
 
           {role === "BUYER" &&
             e.shipmentStatus === "SHIPPED" &&
             e.escrowStatus === "FUNDED" && (
-              <button
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 className="btn-success"
-                style={{ flex: 1, fontSize: "13px", padding: "9px 16px" }}
+                style={{
+                  flex: 1,
+                  fontSize: "14px",
+                  padding: "10px 18px",
+                  borderRadius: "12px",
+                  background: "linear-gradient(135deg, #10b981, #10b98180)",
+                  border: "1px solid #10b98140",
+                  color: "#fff",
+                  fontWeight: "700",
+                  letterSpacing: "0.02em",
+                  boxShadow: "0 8px 20px rgba(16,185,129,0.3)",
+                  transition: "all 0.3s ease",
+                }}
                 onClick={handleConfirmDelivery}
                 disabled={loading}
               >
-                <ShieldCheck size={13} />
+                <ShieldCheck size={16} style={{ marginRight: "8px" }} />
                 {loading ? "Processing…" : "Confirm Delivery"}
-              </button>
+              </motion.button>
             )}
         </div>
       </div>

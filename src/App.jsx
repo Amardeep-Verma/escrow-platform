@@ -10,6 +10,7 @@ import { Toaster } from "react-hot-toast";
 import Users from "./pages/admin/Users";
 import Escrows from "./pages/admin/Escrows";
 import Reports from "./pages/admin/Reports";
+import FraudDetection from "./pages/admin/FraudDetection";
 
 /* ================= PAGES ================= */
 import Login from "./pages/Login";
@@ -52,6 +53,7 @@ function AnimatedRoutes() {
           <Route index element={<AdminDashboard />} />
           <Route path="users" element={<Users />} />
           <Route path="escrows" element={<Escrows />} />
+          <Route path="fraud" element={<FraudDetection />} />
           <Route path="reports" element={<Reports />} />
         </Route>
 
@@ -90,7 +92,8 @@ export default function App() {
             borderRadius: "12px",
             fontSize: "13.5px",
             fontFamily: "Plus Jakarta Sans, sans-serif",
-            boxShadow: "0 16px 48px rgba(0,0,0,0.5), 0 0 0 1px rgba(99,102,241,0.2)",
+            boxShadow:
+              "0 16px 48px rgba(0,0,0,0.5), 0 0 0 1px rgba(99,102,241,0.2)",
             padding: "12px 16px",
           },
           success: {

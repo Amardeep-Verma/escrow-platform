@@ -11,6 +11,8 @@ import {
   X,
   Shield,
   ChevronRight,
+  Settings,
+  Bell,
 } from "lucide-react";
 import { logout } from "../utils/auth";
 
@@ -18,24 +20,63 @@ const mainMenu = [
   { name: "Dashboard", path: "/admin", icon: LayoutDashboard },
   { name: "Users", path: "/admin/users", icon: Users },
   { name: "Escrows", path: "/admin/escrows", icon: DollarSign },
+  { name: "Fraud Detection", path: "/admin/fraud", icon: Shield },
   { name: "Reports", path: "/admin/reports", icon: BarChart2 },
 ];
 
 function NavItem({ item, active, onClick }) {
   const Icon = item.icon;
   return (
-    <motion.div whileHover={{ x: 2 }} transition={{ duration: 0.15 }}>
+    <motion.div
+      whileHover={{ x: 2 }}
+      transition={{ duration: 0.15 }}
+      style={{ position: "relative" }}
+    >
       <Link
         to={item.path}
         onClick={onClick}
         className={`sidebar-item ${active ? "active" : ""}`}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "10px",
+          padding: "10px 12px",
+          borderRadius: "10px",
+          color: active ? "#f1f5f9" : "#94a3b8",
+          fontWeight: "600",
+          fontSize: "13px",
+          textDecoration: "none",
+          transition: "all 0.2s ease",
+          background: active ? "rgba(99,102,241,0.15)" : "transparent",
+          border: active ? "1px solid rgba(99,102,241,0.3)" : "none",
+        }}
+        onMouseEnter={(e) => {
+          if (!active) {
+            e.currentTarget.style.background = "rgba(255,255,255,0.05)";
+            e.currentTarget.style.color = "#f1f5f9";
+          }
+        }}
+        onMouseLeave={(e) => {
+          if (!active) {
+            e.currentTarget.style.background = "transparent";
+            e.currentTarget.style.color = "#94a3b8";
+          }
+        }}
       >
-        <Icon size={15} strokeWidth={2} style={{ flexShrink: 0 }} />
-        <span>{item.name}</span>
+        <Icon size={16} strokeWidth={2} style={{ flexShrink: 0 }} />
+        <span style={{ flex: 1 }}>{item.name}</span>
         {active && (
-          <ChevronRight
-            size={12}
-            style={{ marginLeft: "auto", opacity: 0.5 }}
+          <motion.div
+            initial={{ opacity: 0, x: -5 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ type: "spring", stiffness: 300 }}
+            style={{
+              width: "6px",
+              height: "6px",
+              borderRadius: "50%",
+              background: "#6366f1",
+              boxShadow: "0 0 8px #6366f1",
+            }}
           />
         )}
       </Link>
@@ -47,49 +88,62 @@ function Sidebar({ location, onClose }) {
   return (
     <aside
       style={{
-        width: "240px",
+        width: "260px",
         flexShrink: 0,
-        background: "rgba(10,22,40,0.95)",
+        background:
+          "linear-gradient(135deg, rgba(10,22,40,0.98), rgba(8,18,32,0.98))",
         backdropFilter: "blur(28px)",
         WebkitBackdropFilter: "blur(28px)",
-        borderRight: "1px solid rgba(255,255,255,0.07)",
+        borderRight: "1px solid rgba(255,255,255,0.1)",
         display: "flex",
         flexDirection: "column",
         height: "100%",
         position: "relative",
         zIndex: 10,
+        boxShadow:
+          "0 20px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05)",
       }}
     >
+      {/* Decorative top accent */}
+      <div
+        style={{
+          height: "4px",
+          background: "linear-gradient(90deg, #6366f1, #4f46e5, #a855f7)",
+          boxShadow: "0 0 15px rgba(99,102,241,0.4)",
+        }}
+      />
+
       {/* Brand */}
       <div
         style={{
-          padding: "20px 18px 16px",
-          borderBottom: "1px solid rgba(255,255,255,0.06)",
+          padding: "24px 20px 16px",
+          borderBottom: "1px solid rgba(255,255,255,0.08)",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           <div
             style={{
-              width: "32px",
-              height: "32px",
-              borderRadius: "10px",
+              width: "36px",
+              height: "36px",
+              borderRadius: "12px",
               background: "linear-gradient(135deg, #6366f1, #4f46e5)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              boxShadow: "0 0 16px rgba(99,102,241,0.4)",
+              boxShadow: "0 0 20px rgba(99,102,241,0.5)",
               flexShrink: 0,
             }}
           >
-            <Shield size={15} color="#fff" strokeWidth={2.5} />
+            <Shield size={18} color="#fff" strokeWidth={2.5} />
           </div>
           <div>
             <p
               style={{
-                fontSize: "14px",
-                fontWeight: "700",
+                fontSize: "16px",
+                fontWeight: "800",
                 color: "#f1f5f9",
                 letterSpacing: "-0.02em",
+                margin: 0,
               }}
             >
               Escrow<span className="gradient-text">X</span>
@@ -97,23 +151,35 @@ function Sidebar({ location, onClose }) {
             <p
               style={{
                 fontSize: "10px",
-                color: "#475569",
-                fontWeight: "500",
-                letterSpacing: "0.04em",
+                color: "#64748b",
+                fontWeight: "600",
+                letterSpacing: "0.06em",
+                textTransform: "uppercase",
+                margin: "2px 0 0",
               }}
             >
-              ADMIN PANEL
+              Admin Dashboard
             </p>
           </div>
         </div>
       </div>
 
       {/* Nav */}
-      <div style={{ padding: "14px 10px", flex: 1, overflowY: "auto" }}>
-        <p className="label-text" style={{ padding: "0 8px 10px" }}>
-          Main
+      <div style={{ padding: "16px 12px", flex: 1, overflowY: "auto" }}>
+        <p
+          style={{
+            padding: "0 10px 12px",
+            fontSize: "11px",
+            fontWeight: "700",
+            letterSpacing: "0.06em",
+            textTransform: "uppercase",
+            color: "#64748b",
+            margin: 0,
+          }}
+        >
+          Navigation
         </p>
-        <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
           {mainMenu.map((item) => (
             <NavItem
               key={item.path}
@@ -123,43 +189,93 @@ function Sidebar({ location, onClose }) {
             />
           ))}
         </div>
+
+        {/* Divider */}
+        <div
+          style={{
+            height: "1px",
+            background: "rgba(255,255,255,0.08)",
+            margin: "16px 10px",
+          }}
+        />
+
+        {/* Secondary actions */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+              padding: "10px 12px",
+              borderRadius: "10px",
+              background: "rgba(255,255,255,0.04)",
+              border: "1px solid rgba(255,255,255,0.1)",
+              color: "#94a3b8",
+              fontSize: "13px",
+              fontWeight: "600",
+              cursor: "pointer",
+              transition: "all 0.2s ease",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "rgba(255,255,255,0.08)";
+              e.currentTarget.style.color = "#f1f5f9";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "rgba(255,255,255,0.04)";
+              e.currentTarget.style.color = "#94a3b8";
+            }}
+          >
+            <Settings size={16} />
+            Settings
+          </motion.button>
+        </div>
       </div>
 
-      {/* Logout */}
+      {/* Footer actions */}
       <div
         style={{
-          padding: "12px 10px",
-          borderTop: "1px solid rgba(255,255,255,0.06)",
+          padding: "16px 12px",
+          borderTop: "1px solid rgba(255,255,255,0.08)",
         }}
       >
-        <button
+        <motion.button
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
           onClick={logout}
           style={{
             width: "100%",
             display: "flex",
             alignItems: "center",
             gap: "10px",
-            padding: "9px 12px",
-            borderRadius: "10px",
-            background: "rgba(239,68,68,0.1)",
-            border: "1px solid rgba(239,68,68,0.2)",
+            padding: "12px 14px",
+            borderRadius: "12px",
+            background:
+              "linear-gradient(135deg, rgba(239,68,68,0.15), rgba(239,68,68,0.1))",
+            border: "1px solid rgba(239,68,68,0.3)",
             color: "#f87171",
-            fontSize: "13.5px",
-            fontWeight: "500",
+            fontSize: "13px",
+            fontWeight: "700",
             cursor: "pointer",
-            transition: "all 0.18s ease",
-            fontFamily: "inherit",
+            transition: "all 0.2s ease",
+            letterSpacing: "0.02em",
+            boxShadow: "0 4px 12px rgba(239,68,68,0.2)",
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.background = "rgba(239,68,68,0.18)";
+            e.currentTarget.style.background =
+              "linear-gradient(135deg, rgba(239,68,68,0.2), rgba(239,68,68,0.15))";
+            e.currentTarget.style.boxShadow = "0 6px 16px rgba(239,68,68,0.3)";
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.background = "rgba(239,68,68,0.1)";
+            e.currentTarget.style.background =
+              "linear-gradient(135deg, rgba(239,68,68,0.15), rgba(239,68,68,0.1))";
+            e.currentTarget.style.boxShadow = "0 4px 12px rgba(239,68,68,0.2)";
           }}
         >
-          <LogOut size={14} strokeWidth={2} />
-          Logout
-        </button>
+          <LogOut size={16} strokeWidth={2} />
+          Sign Out
+        </motion.button>
       </div>
     </aside>
   );
@@ -175,36 +291,40 @@ export default function AdminLayout() {
         display: "flex",
         height: "100vh",
         overflow: "hidden",
-        background: "#020617",
+        background: "linear-gradient(135deg, #020617 0%, #0f172a 100%)",
         color: "#f1f5f9",
         position: "relative",
       }}
     >
-      {/* Background blobs */}
+      {/* Background decorative elements */}
       <div
         style={{
           position: "absolute",
-          top: "-120px",
-          left: "-80px",
-          width: "500px",
-          height: "500px",
-          background: "rgba(99,102,241,0.12)",
+          top: "-150px",
+          left: "-100px",
+          width: "600px",
+          height: "600px",
+          background:
+            "radial-gradient(circle, rgba(99,102,241,0.15) 0%, transparent 70%)",
           borderRadius: "50%",
-          filter: "blur(140px)",
+          filter: "blur(120px)",
           pointerEvents: "none",
+          zIndex: 0,
         }}
       />
       <div
         style={{
           position: "absolute",
-          bottom: "-150px",
-          right: "-60px",
-          width: "450px",
-          height: "450px",
-          background: "rgba(59,130,246,0.08)",
+          bottom: "-200px",
+          right: "-80px",
+          width: "500px",
+          height: "500px",
+          background:
+            "radial-gradient(circle, rgba(168,85,247,0.1) 0%, transparent 70%)",
           borderRadius: "50%",
-          filter: "blur(140px)",
+          filter: "blur(120px)",
           pointerEvents: "none",
+          zIndex: 0,
         }}
       />
 
@@ -245,6 +365,7 @@ export default function AdminLayout() {
                 height: "100vh",
                 zIndex: 50,
                 display: "flex",
+                boxShadow: "20px 0 60px rgba(0,0,0,0.5)",
               }}
             >
               <Sidebar
@@ -271,79 +392,116 @@ export default function AdminLayout() {
         <header
           style={{
             margin: "16px 20px 0",
-            padding: "14px 20px",
+            padding: "16px 20px",
             background:
-              "linear-gradient(135deg, rgba(255,255,255,0.055), rgba(255,255,255,0.022))",
-            border: "1px solid rgba(255,255,255,0.07)",
-            borderRadius: "14px",
+              "linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02))",
+            border: "1px solid rgba(255,255,255,0.1)",
+            borderRadius: "16px",
             display: "flex",
             alignItems: "center",
-            gap: "14px",
-            boxShadow: "0 1px 3px rgba(0,0,0,0.4)",
+            gap: "16px",
+            boxShadow:
+              "0 10px 30px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1)",
+            backdropFilter: "blur(12px)",
+            WebkitBackdropFilter: "blur(12px)",
           }}
         >
           {/* Mobile hamburger */}
-          <button
+          <motion.button
             className="lg:hidden"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => setMobileOpen(true)}
             style={{
-              background: "rgba(255,255,255,0.07)",
-              border: "1px solid rgba(255,255,255,0.1)",
-              borderRadius: "8px",
-              padding: "6px",
+              background: "rgba(255,255,255,0.08)",
+              border: "1px solid rgba(255,255,255,0.15)",
+              borderRadius: "10px",
+              padding: "8px",
               color: "#94a3b8",
               cursor: "pointer",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
+              transition: "all 0.2s ease",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "rgba(255,255,255,0.12)";
+              e.currentTarget.style.color = "#f1f5f9";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "rgba(255,255,255,0.08)";
+              e.currentTarget.style.color = "#94a3b8";
             }}
           >
-            <Menu size={16} />
-          </button>
+            <Menu size={18} />
+          </motion.button>
 
           <div style={{ flex: 1 }}>
-            <h1 className="heading-xl" style={{ fontSize: "20px" }}>
-              Welcome back, <span className="gradient-text">Admin</span> 👋
+            <h1
+              className="heading-xl"
+              style={{
+                fontSize: "22px",
+                fontWeight: "800",
+                letterSpacing: "-0.02em",
+                margin: 0,
+              }}
+            >
+              Admin<span className="gradient-text"> Dashboard</span> 👑
             </h1>
             <p
               className="body-text"
-              style={{ fontSize: "13px", marginTop: "1px" }}
+              style={{
+                fontSize: "13px",
+                marginTop: "4px",
+                color: "#94a3b8",
+              }}
             >
-              Monitor escrow analytics &amp; platform activity
+              Monitor platform analytics, manage users, and oversee escrow
+              transactions
             </p>
           </div>
 
           {/* Admin badge */}
-          <div
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.2, type: "spring", stiffness: 300 }}
             style={{
               display: "flex",
               alignItems: "center",
-              gap: "6px",
-              padding: "5px 10px",
-              background: "rgba(99,102,241,0.12)",
-              border: "1px solid rgba(99,102,241,0.25)",
-              borderRadius: "8px",
+              gap: "8px",
+              padding: "8px 12px",
+              background:
+                "linear-gradient(135deg, rgba(99,102,241,0.2), rgba(168,85,247,0.15))",
+              border: "1px solid rgba(99,102,241,0.35)",
+              borderRadius: "12px",
+              boxShadow: "0 4px 16px rgba(99,102,241,0.2)",
             }}
           >
-            <Shield size={12} style={{ color: "#818cf8" }} />
+            <Shield size={14} style={{ color: "#818cf8" }} />
             <span
               style={{
                 fontSize: "11px",
-                fontWeight: "600",
+                fontWeight: "700",
                 color: "#a5b4fc",
-                letterSpacing: "0.04em",
+                letterSpacing: "0.06em",
+                textTransform: "uppercase",
               }}
             >
-              ADMIN
+              Platform Admin
             </span>
-          </div>
+          </motion.div>
         </header>
 
         <motion.main
-          style={{ flex: 1, overflowY: "auto", padding: "16px 20px 24px" }}
+          style={{
+            flex: 1,
+            overflowY: "auto",
+            padding: "20px 20px 28px",
+          }}
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
+          transition={{ duration: 0.3, delay: 0.1 }}
         >
           <Outlet />
         </motion.main>
